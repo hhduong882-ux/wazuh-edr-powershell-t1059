@@ -1,0 +1,16 @@
+# Thông tin nhạy cảm
+client.keys
+*.key
+*.pem
+.env
+secrets*
+
+# Log sinh ra khi chạy lab
+*.log
+
+# File tạm của hệ điều hành và editor
+Thumbs.db
+.DS_Store
+.vscode/
+~$*.docx
+__pycache__/

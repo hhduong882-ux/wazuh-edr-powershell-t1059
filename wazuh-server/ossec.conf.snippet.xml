@@ -1,0 +1,30 @@
+<!--
+  Đoạn cấu hình thêm vào /var/ossec/etc/ossec.conf trên WAZUH MANAGER
+  (đặt bên trong thẻ <ossec_config>).
+  Thay các giá trị <...> bằng giá trị thật trên máy của bạn. KHÔNG commit token thật lên GitHub.
+-->
+
+<!-- 1. Định nghĩa lệnh Active Response -->
+<command>
+  <name>kill-powershell</name>
+  <executable>kill-process.cmd</executable>
+  <timeout_allowed>no</timeout_allowed>
+</command>
+
+<!-- 2. Kích hoạt khi rule thuộc nhóm powershell_kill_trigger bật.
+        location=local: chỉ kill trên máy phát sinh cảnh báo. -->
+<active-response>
+  <command>kill-powershell</command>
+  <location>local</location>
+  <rules_group>powershell_kill_trigger</rules_group>
+</active-response>
+
+<!-- 3. Gửi cảnh báo qua Telegram.
+        hook_url chứa token bot; api_key dùng để chứa chat ID (script custom-telegram.py đọc như vậy). -->
+<integration>
+  <name>custom-telegram</name>
+  <hook_url>https://api.telegram.org/bot<YOUR_BOT_TOKEN>/sendMessage</hook_url>
+  <api_key><YOUR_CHAT_ID></api_key>
+  <rule_id>100010,100011,100012,100013,100014</rule_id>
+  <alert_format>json</alert_format>
+</integration>

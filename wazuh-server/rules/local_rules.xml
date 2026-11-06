@@ -1,0 +1,77 @@
+<group name="my_edr_rules,windows,powershell_threat,">
+<!--  Rule 100010: Phát hiện cờ che giấu, ẩn cửa sổ, lách ExecutionPolicy  -->
+<rule id="100010" level="8">
+<if_group>windows</if_group>
+<field name="win.system.eventID">^1$</field>
+<field name="win.eventdata.image" type="pcre2">(?i)(powershell|pwsh)\.exe$</field>
+<field name="win.eventdata.parentImage" type="pcre2" negate="yes">(?i)(wazuh-agent|ossec-agent)\.exe$</field>
+<field name="win.eventdata.commandLine" type="pcre2" negate="yes">(?i)active-response|kill-process</field>
+<field name="win.eventdata.commandLine" type="pcre2">(?i)(-enc|-encodedcommand|-w\s+hidden|-windowstyle\s+hidden|-e)</field>
+<description>[EDR-ALERT] Phat hien PowerShell su dung tham so che giau (MITRE T1059.001)</description>
+<mitre>
+<id>T1059.001</id>
+<id>T1564.003</id>
+</mitre>
+<group>my_edr_rules,suspicious_powershell,</group>
+</rule>
+<!--  Rule 100011: Kiểu tải mã độc từ Internet nạp thẳng vào RAM (Download Cradle)  -->
+<rule id="100011" level="12">
+<if_group>windows</if_group>
+<field name="win.system.eventID">^1$</field>
+<field name="win.eventdata.image" type="pcre2">(?i)(powershell|pwsh)\.exe$</field>
+<field name="win.eventdata.parentImage" type="pcre2" negate="yes">(?i)(wazuh-agent|ossec-agent)\.exe$</field>
+<field name="win.eventdata.commandLine" type="pcre2" negate="yes">(?i)active-response|kill-process</field>
+<field name="win.eventdata.commandLine" type="pcre2">(?i)(downloadstring|downloadfile|net\.webclient|invoke-webrequest)</field>
+<description>[EDR-BLOCK] NGUY HIEM: Phat hien Download Cradle tai ma doc vao RAM (MITRE T1059.001/T1105)</description>
+<mitre>
+<id>T1059.001</id>
+<id>T1105</id>
+</mitre>
+<group>my_edr_rules,powershell_kill_trigger,</group>
+</rule>
+<!--  Rule 100012: kiểu tấn công không file (Fileless Attack) - Chạy code từ Registry/Biến môi trường  -->
+<rule id="100012" level="12">
+<if_group>windows</if_group>
+<field name="win.system.eventID">^1$</field>
+<field name="win.eventdata.image" type="pcre2">(?i)(powershell|pwsh)\.exe$</field>
+<field name="win.eventdata.parentImage" type="pcre2" negate="yes">(?i)(wazuh-agent|ossec-agent)\.exe$</field>
+<field name="win.eventdata.commandLine" type="pcre2" negate="yes">(?i)active-response|kill-process</field>
+<field name="win.eventdata.commandLine" type="pcre2">(?i)(get-itemproperty|registry::|hkcu:|hklm:|\$env:).*(iex|invoke-expression)</field>
+<description>[EDR-BLOCK] NGUY HIEM: Phat hien PowerShell Fileless chay payload tu Registry (MITRE T1059.001)</description>
+<mitre>
+<id>T1059.001</id>
+<id>T1012</id>
+</mitre>
+<group>my_edr_rules,powershell_kill_trigger,</group>
+</rule>
+<!--  Rule 100013: vô hiệu hóa cơ chế bảo mật Windows (AMSI Bypass)  -->
+<rule id="100013" level="12">
+<if_group>windows</if_group>
+<field name="win.system.eventID">^1$</field>
+<field name="win.eventdata.image" type="pcre2">(?i)(powershell|pwsh)\.exe$</field>
+<field name="win.eventdata.parentImage" type="pcre2" negate="yes">(?i)(wazuh-agent|ossec-agent)\.exe$</field>
+<field name="win.eventdata.commandLine" type="pcre2" negate="yes">(?i)active-response|kill-process</field>
+<field name="win.eventdata.commandLine" type="pcre2">(?i)(amsiscanbuffer|amsiutils|amsiinitfailed|patching amsi)</field>
+<description>[EDR-BLOCK] NGUY HIEM: Phat hien hanh vi pha hoai co che AMSI cua Windows (MITRE T1562.001)</description>
+<mitre>
+<id>T1059.001</id>
+<id>T1562.001</id>
+</mitre>
+<group>my_edr_rules,powershell_kill_trigger,</group>
+</rule>
+<!--  Rule 100014: Đánh cắp mật khẩu / Tương tác vùng nhớ (Mimikatz in Memory)  -->
+<rule id="100014" level="12">
+<if_group>windows</if_group>
+<field name="win.system.eventID">^1$</field>
+<field name="win.eventdata.image" type="pcre2">(?i)(powershell|pwsh)\.exe$</field>
+<field name="win.eventdata.parentImage" type="pcre2" negate="yes">(?i)(wazuh-agent|ossec-agent)\.exe$</field>
+<field name="win.eventdata.commandLine" type="pcre2" negate="yes">(?i)active-response|kill-process</field>
+<field name="win.eventdata.commandLine" type="pcre2">(?i)(invoke-mimikatz|sekurlsa|dumpcreds|lsass|minidump|procdump)</field>
+<description>[EDR-BLOCK] NGUY HIEM: Phat hien lenh Dump Password hoac chay Mimikatz (MITRE T1003.001)</description>
+<mitre>
+<id>T1059.001</id>
+<id>T1003.001</id>
+</mitre>
+<group>my_edr_rules,powershell_kill_trigger,</group>
+</rule>
+</group>
